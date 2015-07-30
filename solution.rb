@@ -13,10 +13,11 @@ end
 
 File.open('apply.rb').each_line do |line|
 	string = line[pattern]
-
 	if string.class == String then
-		File.open('processed-apply.rb', 'wb') do |file|
-			file.write(Base64.decode64(string.gsub("\n", "")))
+		string1 = string.gsub(/\n/, "")
+		puts "#{string1}"
+		File.open('processed-apply.rb', 'w') do |file|
+			file.write(Base64.decode64(string1))
 		end
 	end
 end
