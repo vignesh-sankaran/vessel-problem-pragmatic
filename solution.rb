@@ -15,9 +15,23 @@ File.open('apply.rb').each_line do |line|
 	string = line[pattern]
 	if string.class == String then
 		string1 = string.gsub(/\\n/, "")
-		puts "#{string1}"
 		File.open('processed-apply.rb', 'w') do |file|
 			file.write(Base64.decode64(string1))
+			file.close
+		end
+	end
+end
+
+File.open('processed-apply.rb', 'r').each_line do |line|
+	next_string = line[pattern]
+	puts "#{next_string}"
+
+	if next_string.class == String then
+		next_string1 = next_string.gsub(/\\n/, "")
+		puts "#{next_string}"
+		File.open('processed-apply1.rb', 'w') do |file|
+			file.write(Base64.decode64(next_string1))
+			file.close
 		end
 	end
 end
