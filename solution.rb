@@ -27,7 +27,7 @@ def loop_base64_decoder()
 			end
 		end
 
-		break if base64 == "" then
+		break if base64 == ""
 
 		File.open("processed_apply.rb", "w+") do |file|
 			file.write(Base64.decode64(base64))
