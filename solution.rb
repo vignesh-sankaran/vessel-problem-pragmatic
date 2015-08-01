@@ -2,36 +2,54 @@
 
 require "base64"
 require "open-uri"
-pattern = /(?<=")(.+)(?=")/
 
-File.delete('apply.rb') if File.exist?('apply.rb')
-File.delete('processed-apply.rb') if File.exist?('processed-apply.rb')
+def loop_base64_decoder()
+	pattern = /(?<=")(.+)(?=")/
+	loop do
+		if !File.exist?('processed_apply.rb') then
+			file_name = "apply.rb"
+		else
+			file_name = "processed_apply.rb"
+		end
 
-File.open('apply.rb', 'wb') do |file|
-	file << open('https://www.vessel.com/careers/apply.rb').read
-end
+		base64 = ""
 
-File.open('apply.rb').each_line do |line|
-	string = line[pattern]
-	if string.class == String then
-		string1 = string.gsub(/\\n/, "")
-		File.open('processed-apply.rb', 'w') do |file|
-			file.write(Base64.decode64(string1))
+		File.open(file_name).each_line do |line|
+			string = line[pattern]
+
+			if string.class == String && string.include?("\\n") then
+				string = string.gsub(/\\n/, "")
+				base64 = string
+				File.open("current_solutions.txt", "a") do |file|
+					file.write(string + "\n\n")
+					file.close
+				end
+			end
+		end
+
+		if base64 == "" then
+			puts "Exiting now: base64 = #{base64}\n i = #{i}"
+			break
+		end
+
+		File.open("processed_apply.rb", "w+") do |file|
+			file.write(Base64.decode64(base64))
 			file.close
 		end
 	end
 end
 
-File.open('processed-apply.rb', 'r').each_line do |line|
-	next_string = line[pattern]
-	puts "#{next_string}"
+def main()
 
-	if next_string.class == String then
-		next_string1 = next_string.gsub(/\\n/, "")
-		puts "#{next_string}"
-		File.open('processed-apply1.rb', 'w') do |file|
-			file.write(Base64.decode64(next_string1))
-			file.close
-		end
+	File.delete('apply.rb') if File.exist?('apply.rb')
+	File.delete('processed_apply.rb') if File.exist?('processed_apply.rb')
+
+	File.open('apply.rb', 'wb') do |file|
+		file << open('https://www.vessel.com/careers/apply.rb').read
 	end
+
+	loop_base64_decoder()
+
 end
+
+main()
